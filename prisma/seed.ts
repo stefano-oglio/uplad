@@ -69,7 +69,7 @@ function currentQuarterInfo(now = new Date()) {
 }
 
 async function main() {
-  console.log("🌱 Seeding DocInbox…");
+  console.log("🌱 Seeding Uplad…");
 
   await prisma.reminderEvent.deleteMany();
   await prisma.reminderJob.deleteMany();

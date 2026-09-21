@@ -3,7 +3,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 
-const CLIENT_COOKIE = "docinbox_client";
+const CLIENT_COOKIE = "uplad_client";
 const SESSION_DAYS = 60;
 
 function getClientSecret() {

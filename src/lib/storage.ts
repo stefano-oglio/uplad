@@ -66,7 +66,7 @@ class S3StorageProvider implements StorageProvider {
 
   constructor() {
     const endpoint = process.env.S3_ENDPOINT || undefined;
-    this.bucket = process.env.S3_BUCKET ?? "docinbox";
+    this.bucket = process.env.S3_BUCKET ?? "uplad";
     this.client = new S3Client({
       region: process.env.S3_REGION ?? "eu-west-1",
       endpoint,

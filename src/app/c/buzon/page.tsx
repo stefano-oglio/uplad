@@ -21,7 +21,7 @@ export default async function ClientMailboxPage() {
     return (
       <main className="mx-auto flex min-h-screen max-w-lg flex-col justify-center px-4 py-10 text-center">
         <h1 className="font-[family-name:var(--font-display)] text-2xl font-semibold text-teal-950">
-          DocInbox
+          Uplad
         </h1>
         <p className="mt-4 text-slate-600">
           Tu gestoría aún no ha activado un periodo. Vuelve más tarde.
@@ -55,7 +55,7 @@ export default async function ClientMailboxPage() {
   return (
     <main className="mx-auto min-h-screen max-w-lg px-4 pb-16 pt-8">
       <p className="text-sm font-medium uppercase tracking-wide text-teal-800/80">
-        DocInbox
+        Uplad
       </p>
       <h1 className="mt-2 font-[family-name:var(--font-display)] text-3xl font-semibold leading-tight text-teal-950">
         Sube facturas de {period.label}

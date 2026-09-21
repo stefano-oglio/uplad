@@ -1,4 +1,4 @@
-# Decisiones de diseño (MVP DocInbox)
+# Decisiones de diseño (MVP Uplad)
 
 ## Magic link para clientes (sin password)
 Los autónomos/PYMEs no quieren otra cuenta más. Un enlace firmado (token

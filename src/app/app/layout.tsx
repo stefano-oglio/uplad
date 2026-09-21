@@ -19,9 +19,9 @@ export default async function AppLayout({
           <div className="flex items-center gap-6">
             <Link
               href="/app"
-              className="font-[family-name:var(--font-display)] text-lg font-semibold text-teal-900"
+              className="font-[family-name:var(--font-display)] text-lg font-bold tracking-tight text-slate-900"
             >
-              DocInbox
+              Uplad
             </Link>
             <nav className="hidden items-center gap-4 text-sm text-slate-600 sm:flex">
               <Link href="/app" className="hover:text-teal-900">

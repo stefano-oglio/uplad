@@ -27,7 +27,7 @@ class ConsoleResendNotifier implements Notifier {
   }
 
   async sendEmail(payload: NotifyPayload): Promise<{ ok: boolean; error?: string }> {
-    const from = process.env.EMAIL_FROM ?? "DocInbox <noreply@localhost>";
+    const from = process.env.EMAIL_FROM ?? "Uplad <noreply@localhost>";
     console.log("[Notifier:email]", {
       to: payload.to,
       subject: payload.subject,

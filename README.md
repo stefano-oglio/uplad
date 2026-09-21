@@ -1,4 +1,4 @@
-# DocInbox
+# Uplad
 
 MVP B2B para gestorías en España: recepción documental móvil + panel de semáforos por periodo fiscal.
 
@@ -22,7 +22,7 @@ MVP B2B para gestorías en España: recepción documental móvil + panel de sem�
 
 ```bash
 # Ejemplo Docker Postgres
-docker run --name docinbox-pg -e POSTGRES_PASSWORD=docinbox -e POSTGRES_USER=docinbox -e POSTGRES_DB=docinbox -p 5432:5432 -d postgres:16
+docker run --name uplad-pg -e POSTGRES_PASSWORD=uplad -e POSTGRES_USER=uplad -e POSTGRES_DB=uplad -p 5432:5432 -d postgres:16
 ```
 
 ### 2. Instalar y migrar
