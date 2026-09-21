@@ -1,0 +1,181 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  ADVISOR
+}
+
+enum ClientPeriodStatus {
+  AT_RISK
+  IN_PROGRESS
+  COMPLETE
+}
+
+enum CompletedBy {
+  CLIENT
+  ADVISOR
+}
+
+enum ReminderStep {
+  R1
+  R2
+  R3
+  R4
+}
+
+enum ReminderJobStatus {
+  PENDING
+  SENT
+  CANCELLED
+  FAILED
+}
+
+enum ReminderChannel {
+  EMAIL
+  MANUAL_WHATSAPP
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  users   User[]
+  clients Client[]
+  periods Period[]
+}
+
+model User {
+  id             String   @id @default(cuid())
+  organizationId String
+  email          String   @unique
+  name           String
+  role           UserRole @default(ADVISOR)
+  passwordHash   String?
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+model Client {
+  id               String   @id @default(cuid())
+  organizationId   String
+  name             String
+  nif              String?
+  phone            String?
+  email            String?
+  notes            String?
+  remindersPaused  Boolean  @default(false)
+  createdAt        DateTime @default(now())
+
+  organization  Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  clientPeriods ClientPeriod[]
+  magicLinks    MagicLink[]
+
+  @@index([organizationId])
+}
+
+model Period {
+  id           String   @id @default(cuid())
+  organizationId String
+  label        String
+  year         Int
+  quarter      Int?
+  startDate    DateTime
+  endDate      DateTime
+  deadlineDate DateTime
+  isActive     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  organization  Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  clientPeriods ClientPeriod[]
+
+  @@index([organizationId])
+  @@index([organizationId, isActive])
+}
+
+model ClientPeriod {
+  id             String             @id @default(cuid())
+  clientId       String
+  periodId       String
+  status         ClientPeriodStatus @default(AT_RISK)
+  completedAt    DateTime?
+  completedBy    CompletedBy?
+  lastActivityAt DateTime?
+  createdAt      DateTime           @default(now())
+
+  client        Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  period        Period         @relation(fields: [periodId], references: [id], onDelete: Cascade)
+  documents     Document[]
+  reminderJobs  ReminderJob[]
+  reminderEvents ReminderEvent[]
+
+  @@unique([clientId, periodId])
+  @@index([periodId, status])
+}
+
+model Document {
+  id              String   @id @default(cuid())
+  clientPeriodId  String
+  storageKey      String
+  originalFileName String
+  mimeType        String
+  sizeBytes       Int
+  ocrJson         Json?
+  createdAt       DateTime @default(now())
+
+  clientPeriod ClientPeriod @relation(fields: [clientPeriodId], references: [id], onDelete: Cascade)
+
+  @@index([clientPeriodId])
+}
+
+model MagicLink {
+  id        String    @id @default(cuid())
+  clientId  String
+  tokenHash String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+}
+
+model ReminderJob {
+  id             String            @id @default(cuid())
+  clientPeriodId String
+  step           ReminderStep
+  scheduledFor   DateTime
+  status         ReminderJobStatus @default(PENDING)
+  channel        ReminderChannel   @default(EMAIL)
+  sentAt         DateTime?
+  error          String?
+  createdAt      DateTime          @default(now())
+
+  clientPeriod ClientPeriod @relation(fields: [clientPeriodId], references: [id], onDelete: Cascade)
+
+  @@unique([clientPeriodId, step])
+  @@index([status, scheduledFor])
+}
+
+model ReminderEvent {
+  id             String   @id @default(cuid())
+  clientPeriodId String
+  type           String
+  meta           Json?
+  createdAt      DateTime @default(now())
+
+  clientPeriod ClientPeriod @relation(fields: [clientPeriodId], references: [id], onDelete: Cascade)
+
+  @@index([clientPeriodId, createdAt])
+}
