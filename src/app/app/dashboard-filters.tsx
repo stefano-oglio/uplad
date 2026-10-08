@@ -6,21 +6,23 @@ import { Input } from "@/components/ui/input";
 export function DashboardFilters({
   currentStatus,
   currentQ,
+  periodId,
 }: {
   currentStatus: string;
   currentQ: string;
+  periodId: string;
 }) {
   const router = useRouter();
   const pathname = usePathname();
 
   function update(next: { status?: string; q?: string }) {
     const params = new URLSearchParams();
+    params.set("period", periodId);
     const status = next.status ?? currentStatus;
     const q = next.q ?? currentQ;
     if (status && status !== "ALL") params.set("status", status);
     if (q) params.set("q", q);
-    const qs = params.toString();
-    router.push(qs ? `${pathname}?${qs}` : pathname);
+    router.push(`${pathname}?${params.toString()}`);
   }
 
   return (
