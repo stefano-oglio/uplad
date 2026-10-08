@@ -120,10 +120,10 @@ async function main() {
     },
   });
 
-  // Previous period (inactive) for UI context
+  // Previous period (historical) — populated so period navigation is demoable
   const prevQuarter = q.quarter === 1 ? 4 : q.quarter - 1;
   const prevYear = q.quarter === 1 ? q.year - 1 : q.year;
-  await prisma.period.create({
+  const prevPeriod = await prisma.period.create({
     data: {
       organizationId: org.id,
       label: `${prevQuarter}T ${prevYear}`,
@@ -209,6 +209,47 @@ async function main() {
           },
         });
       }
+    }
+
+    // Previous quarter: mostly closed (historical archive)
+    const prevStatus =
+      i < 16
+        ? ClientPeriodStatus.COMPLETE
+        : i < 18
+          ? ClientPeriodStatus.IN_PROGRESS
+          : ClientPeriodStatus.AT_RISK;
+    const prevCp = await prisma.clientPeriod.create({
+      data: {
+        clientId: client.id,
+        periodId: prevPeriod.id,
+        status: prevStatus,
+        completedAt:
+          prevStatus === ClientPeriodStatus.COMPLETE ? new Date(prevPeriod.deadlineDate) : null,
+        completedBy:
+          prevStatus === ClientPeriodStatus.COMPLETE
+            ? i % 2 === 0
+              ? "CLIENT"
+              : "ADVISOR"
+            : null,
+        lastActivityAt: new Date(prevPeriod.deadlineDate),
+      },
+    });
+    if (prevStatus !== ClientPeriodStatus.AT_RISK) {
+      const placeholder = await writePlaceholderDoc(
+        org.id,
+        client.id,
+        prevPeriod.id,
+        `archivo-${prevPeriod.label.replace(/\s/g, "")}-${i + 1}.jpg`
+      );
+      await prisma.document.create({
+        data: {
+          clientPeriodId: prevCp.id,
+          storageKey: placeholder.key,
+          originalFileName: `archivo-${prevPeriod.label.replace(/\s/g, "")}-${i + 1}.jpg`,
+          mimeType: "image/jpeg",
+          sizeBytes: placeholder.size,
+        },
+      });
     }
   }
 

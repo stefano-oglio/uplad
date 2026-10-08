@@ -1,14 +1,22 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import { ClientPeriodStatus } from "@prisma/client";
-import { requireOrgId, getActivePeriod } from "@/lib/org";
+import {
+  requireOrgId,
+  resolveViewPeriod,
+  listOrgPeriods,
+  periodQuery,
+} from "@/lib/org";
 import { prisma } from "@/lib/prisma";
 import { computeDisplayStatus } from "@/lib/status";
 import { StatusBadge } from "@/components/status-badge";
 import { formatDateEs } from "@/lib/utils";
 import { DashboardFilters } from "./dashboard-filters";
+import { PeriodSwitcher } from "@/components/app/period-switcher";
+import { PeriodViewBanner } from "@/components/app/period-view-banner";
 
-type SearchParams = Promise<{ status?: string; q?: string }>;
+type SearchParams = Promise<{ status?: string; q?: string; period?: string }>;
 
 export default async function DashboardPage({
   searchParams,
@@ -19,21 +27,27 @@ export default async function DashboardPage({
   if (!ctx) redirect("/login");
 
   const params = await searchParams;
-  const period = await getActivePeriod(ctx.organizationId);
+  const periods = await listOrgPeriods(ctx.organizationId);
+  const { viewing: period, active } = await resolveViewPeriod(
+    ctx.organizationId,
+    params.period
+  );
 
   if (!period) {
     return (
       <div className="space-y-4">
-        <h1 className="text-2xl font-semibold text-slate-900">Clientes</h1>
+        <h1 className="text-2xl font-semibold text-slate-900">Inicio</h1>
         <p className="text-slate-600">
-          No hay periodo activo.{" "}
-          <Link href="/app/periods" className="text-teal-800 underline">
-            Crear periodo
+          No hay periodos.{" "}
+          <Link href="/app/periods" className="text-emerald-800 underline">
+            Crear el primero
           </Link>
         </p>
       </div>
     );
   }
+
+  const isHistorical = Boolean(active && active.id !== period.id);
 
   const clients = await prisma.client.findMany({
     where: { organizationId: ctx.organizationId },
@@ -72,7 +86,11 @@ export default async function DashboardPage({
     if (statusFilter && statusFilter !== "ALL" && r.status !== statusFilter) {
       return false;
     }
-    if (q && !r.name.toLowerCase().includes(q) && !(r.nif ?? "").toLowerCase().includes(q)) {
+    if (
+      q &&
+      !r.name.toLowerCase().includes(q) &&
+      !(r.nif ?? "").toLowerCase().includes(q)
+    ) {
       return false;
     }
     return true;
@@ -88,22 +106,45 @@ export default async function DashboardPage({
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Clientes</h1>
+          <h1 className="text-2xl font-semibold text-slate-900">Inicio</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Periodo <strong>{period.label}</strong> · Cierre orientativo{" "}
-            {formatDateEs(period.deadlineDate)}
+            Cierre orientativo {formatDateEs(period.deadlineDate)}
+            {period.isActive ? " · periodo activo para clientes" : ""}
           </p>
         </div>
-        <div className="flex gap-3 text-sm font-medium">
-          <span title="Completo">🟢 {counts.COMPLETE}</span>
-          <span title="En curso">🟡 {counts.IN_PROGRESS}</span>
-          <span title="En riesgo">🔴 {counts.AT_RISK}</span>
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex gap-3 text-sm font-medium">
+            <span title="Completo">🟢 {counts.COMPLETE}</span>
+            <span title="En curso">🟡 {counts.IN_PROGRESS}</span>
+            <span title="En riesgo">🔴 {counts.AT_RISK}</span>
+          </div>
+          <Suspense fallback={null}>
+            <PeriodSwitcher
+              periods={periods.map((p) => ({
+                id: p.id,
+                label: p.label,
+                isActive: p.isActive,
+                year: p.year,
+                quarter: p.quarter,
+              }))}
+              currentPeriodId={period.id}
+            />
+          </Suspense>
         </div>
       </div>
+
+      {isHistorical && active && (
+        <PeriodViewBanner
+          viewingLabel={period.label}
+          activeLabel={active.label}
+          activePeriodId={active.id}
+        />
+      )}
 
       <DashboardFilters
         currentStatus={statusFilter ?? "ALL"}
         currentQ={params.q ?? ""}
+        periodId={period.id}
       />
 
       <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
@@ -129,7 +170,9 @@ export default async function DashboardPage({
                     <div className="text-xs text-slate-500">{r.nif}</div>
                   )}
                   {r.remindersPaused && (
-                    <div className="text-xs text-amber-700">Recordatorios pausados</div>
+                    <div className="text-xs text-amber-700">
+                      Recordatorios pausados
+                    </div>
                   )}
                 </td>
                 <td className="px-4 py-3">
@@ -144,17 +187,20 @@ export default async function DashboardPage({
                 </td>
                 <td className="px-4 py-3 text-right">
                   <Link
-                    href={`/app/clients/${r.id}`}
-                    className="text-teal-800 hover:underline"
+                    href={`/app/clients/${r.id}${periodQuery(period.id)}`}
+                    className="text-emerald-800 hover:underline"
                   >
-                    Ver ficha
+                    Ver periodo
                   </Link>
                 </td>
               </tr>
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-10 text-center text-slate-500">
+                <td
+                  colSpan={5}
+                  className="px-4 py-10 text-center text-slate-500"
+                >
                   No hay clientes con estos filtros
                 </td>
               </tr>
@@ -162,6 +208,13 @@ export default async function DashboardPage({
           </tbody>
         </table>
       </div>
+
+      <p className="text-xs text-slate-500">
+        ¿Quieres gestionar o activar periodos?{" "}
+        <Link href="/app/periods" className="text-emerald-800 underline">
+          Ir a Periodos
+        </Link>
+      </p>
     </div>
   );
 }

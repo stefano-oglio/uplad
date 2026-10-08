@@ -96,9 +96,19 @@ Ver `.env.example`. Principales:
 |------|-------------|
 | `/` | Landing |
 | `/login` | Asesores |
-| `/app` | Dashboard semáforos |
-| `/app/clients/[id]` | Ficha cliente |
-| `/app/periods` | Periodos fiscales |
+| `/app` | Inicio — dashboard semáforos (`?period=` para cambiar de vista) |
+| `/app/clients` | Directorio de clientes (alta/edición) |
+| `/app/clients/new` | Nuevo cliente |
+| `/app/clients/[id]/edit` | Editar perfil |
+| `/app/clients/[id]` | Ficha de periodo (`?period=` conserva el periodo en vista) |
+| `/app/settings` | Ajustes del despacho |
+| `/app/periods` | Timeline de periodos: ver / activar / crear |
+
+### Navegación entre periodos
+
+- **Periodo activo**: al que suben los clientes (buzón + recordatorios). Solo uno.
+- **Periodo en vista**: el que estás mirando en Inicio/ficha. Se elige con el selector ← → o desde Periodos → «Ver en Inicio».
+- URL: `/app?period=<id>`. Ver un histórico no cambia el activo.
 | `/c/[token]` | Magic link → sesión |
 | `/c/buzon` | Buzón móvil del cliente |
 
