@@ -101,7 +101,7 @@ export default async function ClientsDirectoryPage({
                     href={`/app/clients/${c.id}`}
                     className="text-slate-600 hover:underline"
                   >
-                    Periodo
+                    Documentos
                   </Link>
                 </td>
               </tr>

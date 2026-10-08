@@ -59,12 +59,12 @@ export default async function EditClientPage({
         />
       </div>
       <p className="text-sm text-slate-500">
-        Para documentos y semáforo del periodo activo, ve a{" "}
+        Para ver qué ha subido en cada periodo (y el semáforo), ve a{" "}
         <Link
           href={`/app/clients/${client.id}`}
           className="text-emerald-800 underline"
         >
-          la ficha de periodo
+          su ficha de periodos y documentos
         </Link>
         .
       </p>
