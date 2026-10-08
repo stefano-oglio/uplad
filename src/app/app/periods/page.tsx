@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireOrgId } from "@/lib/org";
 import { prisma } from "@/lib/prisma";
@@ -24,7 +25,12 @@ export default async function PeriodsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold">Periodos</h1>
+        <p className="text-sm">
+          <Link href="/app/settings" className="text-emerald-800 hover:underline">
+            ← Ajustes
+          </Link>
+        </p>
+        <h1 className="mt-2 text-2xl font-semibold">Periodos</h1>
         <p className="mt-1 text-sm text-slate-600">
           Crea periodos tipo 2026-Q3 con fecha de cierre orientativo.
         </p>

@@ -26,8 +26,8 @@ export default async function ClientDetailPage({ params }: { params: Params }) {
     return (
       <p className="text-slate-600">
         Sin periodo activo.{" "}
-        <Link href="/app/periods" className="text-teal-800 underline">
-          Crear uno
+        <Link href="/app/periods" className="text-emerald-800 underline">
+          Crear uno en Ajustes
         </Link>
       </p>
     );
@@ -72,9 +72,23 @@ export default async function ClientDetailPage({ params }: { params: Params }) {
   return (
     <div className="space-y-8">
       <div>
-        <Link href="/app" className="text-sm text-teal-800 hover:underline">
-          ← Clientes
-        </Link>
+        <div className="flex flex-wrap gap-3 text-sm">
+          <Link href="/app" className="text-emerald-800 hover:underline">
+            ← Inicio
+          </Link>
+          <Link
+            href="/app/clients"
+            className="text-slate-500 hover:text-emerald-800 hover:underline"
+          >
+            Clientes
+          </Link>
+          <Link
+            href={`/app/clients/${client.id}/edit`}
+            className="text-slate-500 hover:text-emerald-800 hover:underline"
+          >
+            Editar perfil
+          </Link>
+        </div>
         <div className="mt-3 flex flex-wrap items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl font-semibold">{client.name}</h1>

@@ -24,11 +24,11 @@ export default async function DashboardPage({
   if (!period) {
     return (
       <div className="space-y-4">
-        <h1 className="text-2xl font-semibold text-slate-900">Clientes</h1>
+        <h1 className="text-2xl font-semibold text-slate-900">Inicio</h1>
         <p className="text-slate-600">
           No hay periodo activo.{" "}
-          <Link href="/app/periods" className="text-teal-800 underline">
-            Crear periodo
+          <Link href="/app/periods" className="text-emerald-800 underline">
+            Crear periodo en Ajustes
           </Link>
         </p>
       </div>
@@ -88,7 +88,7 @@ export default async function DashboardPage({
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Clientes</h1>
+          <h1 className="text-2xl font-semibold text-slate-900">Inicio</h1>
           <p className="mt-1 text-sm text-slate-600">
             Periodo <strong>{period.label}</strong> · Cierre orientativo{" "}
             {formatDateEs(period.deadlineDate)}
@@ -145,9 +145,9 @@ export default async function DashboardPage({
                 <td className="px-4 py-3 text-right">
                   <Link
                     href={`/app/clients/${r.id}`}
-                    className="text-teal-800 hover:underline"
+                    className="text-emerald-800 hover:underline"
                   >
-                    Ver ficha
+                    Ver periodo
                   </Link>
                 </td>
               </tr>
