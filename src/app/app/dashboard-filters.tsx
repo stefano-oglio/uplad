@@ -40,7 +40,7 @@ export function DashboardFilters({
             onClick={() => update({ status: value })}
             className={`rounded px-3 py-1.5 transition-colors ${
               currentStatus === value
-                ? "bg-teal-800 text-white"
+                ? "bg-[#0b1628] text-white"
                 : "text-slate-600 hover:bg-slate-100"
             }`}
           >

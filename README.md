@@ -96,9 +96,13 @@ Ver `.env.example`. Principales:
 |------|-------------|
 | `/` | Landing |
 | `/login` | Asesores |
-| `/app` | Dashboard semáforos |
-| `/app/clients/[id]` | Ficha cliente |
-| `/app/periods` | Periodos fiscales |
+| `/app` | Inicio — dashboard semáforos |
+| `/app/clients` | Directorio de clientes (alta/edición) |
+| `/app/clients/new` | Nuevo cliente |
+| `/app/clients/[id]/edit` | Editar perfil |
+| `/app/clients/[id]` | Ficha de periodo (docs, recordatorios) |
+| `/app/settings` | Ajustes del despacho |
+| `/app/periods` | Periodos fiscales (desde Ajustes) |
 | `/c/[token]` | Magic link → sesión |
 | `/c/buzon` | Buzón móvil del cliente |
 
